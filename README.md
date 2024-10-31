@@ -46,11 +46,3 @@ Boolean `level-up` attribute allows to replace `list-m` by its children.
 import {} from '@titsoft/list-m'
 
 ```
-
-```javascript
-import {defineList} from '@titsoft/list-m'
-import {render} from '@titsoft/text-m'
-
-define(render)
-
-```
