@@ -1,0 +1,37 @@
+{
+  "name": "@titsoft/list-m",
+  "version": "0.1.0",
+  "description": "ul and ol as custom-elemnts",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "npm run rollup:esm_min && npm run rollup:esm && npm run rollup:esm_watch",
+    "rollup:esm_min": "rollup --config rollup/rollup.config_esm_min.js",
+    "rollup:esm": "rollup --config rollup/rollup.config_esm.js",
+    "rollup:esm_watch": "rollup --config rollup/rollup.config_esm.js --w"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thipages/list-m.git"
+  },
+  "keywords": [
+    "custom-elements",
+    "ol",
+    "ul",
+    "list"
+  ],
+  "author": "Thierry Pagès",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thipages/list-m/issues"
+  },
+  "homepage": "https://github.com/thipages/list-m#readme",
+  "dependencies": {
+    "@titsoft/text-m": "^0.4.1",
+    "html-parsed-element": "^0.4.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-terser": "^0.4.4"
+  }
+}

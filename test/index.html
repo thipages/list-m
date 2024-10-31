@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>xl-m Tests</title>
+    <script
+        data-imports="html-parsed-element @titsoft/text-m/render"
+        src="https://esm.run/data-imports"
+    ></script>
+    <script type="module" src="./../src/index.js"></script>
+    <style>
+        .red {
+            color:red;
+        }
+    </style>
+</head>
+<body>
+    
+<list-m>
+  - level 1
+    - level 2
+        - level 3
+</list-m>
+<hr />
+<list-m>
+  - level 1
+    - level 2
+    - level 3
+</list-m>
+<hr />
+<list-m>
+    1. |em/point A/
+       A sub Text
+    2. point B
+      - point C
+  </list-m>
+
+</body>
+</html>
