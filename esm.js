@@ -76,6 +76,36 @@ const HTMLParsedElement = (() => {
   return HTMLParsedElement.withParsedCallback(HTMLParsedElement);
 })();
 
+const isAsyncFunction = fn => fn.constructor.name === 'AsyncFunction';
+const replace = (that) => {
+    if (that.hasAttribute('level-up')) {
+        that.replaceWith(...that.children);
+    }
+};
+class MElement extends HTMLParsedElement {
+    #config
+    constructor(config = {}) {
+        super();
+        this.#config = config;
+    }
+    connectedCallback() {
+        if (this.parsed && this.#config.oneConnect) return
+        super.connectedCallback();
+    }
+    parsedCallback() {
+        if (this.init) {
+            if (isAsyncFunction(this.init)) {
+                this.init().then (
+                    () => replace(this)
+                );
+            } else {
+                this.init();
+                replace(this);
+            } 
+        }                   
+    }
+}
+
 // tls = Text-level semantics, see https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-dfn-element
 const tlsElementsSupported = [
     'a', 'em', 'strong', 'small', 's', 'cite', 'q',
@@ -295,7 +325,7 @@ const htmlListError = `<ul><li>List Error</li></ul>`;
 //
 function listm () { 
     customElements.define(
-        'list-m', class extends HTMLParsedElement {
+        'list-m', class extends MElement {
             constructor() {
                 super();
             }
