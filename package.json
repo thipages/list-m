@@ -1,6 +1,6 @@
 {
   "name": "@titsoft/list-m",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "ul and ol as custom-elemnts",
   "main": "src/index.js",
   "scripts": {
@@ -27,8 +27,8 @@
   },
   "homepage": "https://github.com/thipages/list-m#readme",
   "dependencies": {
-    "@titsoft/m-element": "^0.2.0",
-    "@titsoft/text-m": "^0.5.0"
+    "@titsoft/m-element": "^0.5.1",
+    "@titsoft/text-m": "^0.6.1"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.3.0",

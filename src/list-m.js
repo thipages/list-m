@@ -9,13 +9,13 @@ export default function () {
             constructor() {
                 super()
             }
-            parsedCallback() {
+            init() {
                 render(this)
             }
         }
     )
     function render(that) {
-        const [isValid, html] = parseContent(that.textContent)
+        const [isValid, html] = parseContent(that.originalText())
         that.innerHTML = isValid
             ? html
             : htmlListError
