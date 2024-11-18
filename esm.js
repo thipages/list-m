@@ -76,33 +76,53 @@ const HTMLParsedElement = (() => {
   return HTMLParsedElement.withParsedCallback(HTMLParsedElement);
 })();
 
+const LEVEL_UP = 'level-up';
 const isAsyncFunction = fn => fn.constructor.name === 'AsyncFunction';
-const replace = (that) => {
-    if (that.hasAttribute('level-up')) {
-        that.replaceWith(...that.children);
-    }
-};
 class MElement extends HTMLParsedElement {
     #config
-    constructor(config = {}) {
+    #fragment
+    constructor(config) {
         super();
-        this.#config = config;
+        this.#config = config || {};
     }
-    connectedCallback() {
-        if (this.parsed && this.#config.oneConnect) return
-        super.connectedCallback();
+    #content(remove, textOnly) {
+        const _ = this.#fragment;
+        if (!_) return
+        if (remove) this.#fragment = null;
+        return textOnly ?  _.textContent : _
+    }
+    #finish (that) {
+        if (that.hasAttribute(LEVEL_UP)) {
+            that.replaceWith(...that.children);
+        }
+        that.dispatchEvent(new Event('load'));
+        that.lodaed = true;
+    }
+    originalFragment(remove = true) {
+        return this.#content(remove, false)
+    }
+    originalText(remove = true) {
+        return this.#content(remove, true)
     }
     parsedCallback() {
+        const end = () => this.#finish(this);
+        // move childNodes to a fragment
+        this.#fragment = document.createDocumentFragment();
+        this.#fragment.append(...this.childNodes);
+        // add onLoadHtml
+        this.innerHTML = this.#config.onLoadHtml || '';
+        // manage async/sync init function
         if (this.init) {
             if (isAsyncFunction(this.init)) {
-                this.init().then (
-                    () => replace(this)
-                );
+                this.init().then(end);
             } else {
                 this.init();
-                replace(this);
+                end();
             } 
-        }                   
+        } else {
+            end();
+        }   
+              
     }
 }
 
@@ -329,13 +349,13 @@ function listm () {
             constructor() {
                 super();
             }
-            parsedCallback() {
+            init() {
                 render(this);
             }
         }
     );
     function render(that) {
-        const [isValid, html] = parseContent(that.textContent);
+        const [isValid, html] = parseContent(that.originalText());
         that.innerHTML = isValid
             ? html
             : htmlListError;

@@ -1,6 +1,6 @@
 {
   "name": "@titsoft/list-m",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "ul and ol as custom-elemnts",
   "main": "src/index.js",
   "scripts": {
