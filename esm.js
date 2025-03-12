@@ -76,14 +76,27 @@ const HTMLParsedElement = (() => {
   return HTMLParsedElement.withParsedCallback(HTMLParsedElement);
 })();
 
+// Atribute
 const LEVEL_UP = 'level-up';
+// load/error status
+const LOADED = 'loaded';
+const ON_ERROR = 'onError';
+// constructor config properties
+const ON_LOAD_HTML = 'onLoadHtml';
+const ON_ERROR_HTML = 'onErrorHtml';
+// Error message for async init
+const ERROR = 'm-element error';
+//
 const isAsyncFunction = fn => fn.constructor.name === 'AsyncFunction';
 class MElement extends HTMLParsedElement {
     #config
     #fragment
+    #slots
     constructor(config) {
         super();
         this.#config = config || {};
+        this[ON_ERROR] = false;
+        this[LOADED] = false;
     }
     #content(remove, textOnly) {
         const _ = this.#fragment;
@@ -91,12 +104,18 @@ class MElement extends HTMLParsedElement {
         if (remove) this.#fragment = null;
         return textOnly ?  _.textContent : _
     }
-    #finish (that) {
-        if (that.hasAttribute(LEVEL_UP)) {
-            that.replaceWith(...that.children);
+    #finish (error) {
+        this[LOADED] = true;
+        this[ON_ERROR] = !!error;
+        // Any errors will display onErrorHtml config property
+        if (this[ON_ERROR]) {
+            this.innerHTML = this.#config[ON_ERROR_HTML] || '';
         }
-        that.dispatchEvent(new Event('load'));
-        that.lodaed = true;
+        if (this.hasAttribute(LEVEL_UP)) {
+            this.replaceWith(...this.children);
+        }
+        // DEV: dispatchEvent runs after all changes
+        this.dispatchEvent(new Event('load'));
     }
     originalFragment(remove = true) {
         return this.#content(remove, false)
@@ -105,24 +124,34 @@ class MElement extends HTMLParsedElement {
         return this.#content(remove, true)
     }
     parsedCallback() {
-        const end = () => this.#finish(this);
+        const that = this;
+        const end = (e) => that.#finish(e);
+        // slots removal and storage
+        this.#slots = this.querySelectorAll('slot');
+        this.#slots.forEach(e => e.remove());
         // move childNodes to a fragment
         this.#fragment = document.createDocumentFragment();
         this.#fragment.append(...this.childNodes);
-        // add onLoadHtml
-        this.innerHTML = this.#config.onLoadHtml || '';
+        // display onLoadHtml
+        this.innerHTML = this.#config[ON_LOAD_HTML] || '';
         // manage async/sync init function
         if (this.init) {
             if (isAsyncFunction(this.init)) {
-                this.init().then(end);
+                this.init()
+                    .then(() => end())
+                    .catch((e)=> {
+                        end(new Error(ERROR, {cause: e}));
+                    });
             } else {
                 this.init();
                 end();
             } 
         } else {
             end();
-        }   
-              
+        } 
+    }
+    getSlotByName(name) {
+        return [...this.#slots].filter(e => name && e.name === name) [0]
     }
 }
 
